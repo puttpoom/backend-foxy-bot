@@ -1,0 +1,61 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id             Int            @id @default(autoincrement())
+  email          String         @unique
+  uuid           String?        @unique
+  password       String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  historyLogins  HistoryLogin[]
+  expPackages    ExpPackage[]
+  usageHistories UsageHistory[]
+
+  @@map("user")
+}
+
+model HistoryLogin {
+  id      Int      @id @default(autoincrement())
+  userId  Int
+  loginAt DateTime @default(now())
+  user    User     @relation(fields: [userId], references: [id])
+
+  @@map("history_login")
+}
+
+model ExpPackage {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  packageId  Int
+  expiration DateTime
+  user       User     @relation(fields: [userId], references: [id])
+  package    Package  @relation(fields: [packageId], references: [id])
+
+  @@map("exp_package")
+}
+
+model Package {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  description String?
+  expPackages ExpPackage[]
+
+  @@map("package")
+}
+
+model UsageHistory {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  linkGoods String
+  usedAt    DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("usage_history")
+}
