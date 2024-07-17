@@ -12,7 +12,7 @@ const routes = require("./routes");
 const app = express();
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 10 * 60 * 1000, // 10 minutes
   max: 50, // limit each IP to request per windowMs
   message: "Too many requests from this IP, please try again later.",
 });
