@@ -1,17 +1,37 @@
 const userService = require("../services/user-service");
 const hashService = require("../services/hash-service");
 const jwtService = require("../services/jwt-service");
+const secretCodeService = require("../services/secret-code-service");
 
 const catchError = require("../utils/catch-error");
 
 exports.register = catchError(async (req, res, next) => {
+  const isCodeValid = await secretCodeService.findSecretCode(req.body.code);
+  console.log(isCodeValid, "isCodeValid");
+
+  if (!isCodeValid) {
+    return res.status(400).json({ message: "Invalid code" });
+  }
+
+  if (isCodeValid.code !== req.body.code) {
+    return res.status(400).json({ message: "Invalid code" });
+  }
+
   const existUser = await userService.findUserByEmail(req.body.email);
   if (existUser) {
     return res.status(400).json({ message: "Email already exists" });
   }
 
   req.body.password = await hashService.hash(req.body.password);
+
+  delete req.body.code;
   const newUser = await userService.createUser(req.body);
+
+  const activatedUser = await secretCodeService.activateSecretCode(
+    isCodeValid.id,
+    newUser.id
+  );
+
   const payload = { id: newUser.id, email: newUser.email };
 
   const accessToken = jwtService.sign(payload);
