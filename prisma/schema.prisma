@@ -13,6 +13,8 @@ model User {
   password       String
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
+  uuid           String?
+  point          Int            @default(0)
   role           Role           @default(USER)
   subscriptions  Subscription[]
   usageHistories UsageHistory[]
@@ -39,13 +41,14 @@ enum Role {
 }
 
 model Subscription {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   userId    Int
   packageId Int
-  startDate DateTime @default(now())
-  endDate   DateTime
-  user      User     @relation(fields: [userId], references: [id])
-  package   Package  @relation(fields: [packageId], references: [id])
+  startDate DateTime  @default(now())
+  endDate   DateTime?
+  isExpired Boolean   @default(false)
+  user      User      @relation(fields: [userId], references: [id])
+  package   Package   @relation(fields: [packageId], references: [id])
 
   @@map("subscription")
 }
@@ -53,8 +56,11 @@ model Subscription {
 model Package {
   id            Int            @id @default(autoincrement())
   name          String
+  description   String?
   duration      Int // Duration in days (e.g., 3 for trial, 30 for 1 month)
   isPermanent   Boolean // True if the package is permanent, false otherwise
+  price         Int            @default(0)
+  href          String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   subscriptions Subscription[]

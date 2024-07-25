@@ -20,7 +20,7 @@ const authenticate = catchError(async (req, res, next) => {
 
   jwtService.verifyToken(token, async (error, decoded) => {
     if (error) {
-      return res.status(403).json({ message: "Unauthorized, Token Exprie" });
+      return res.status(403).json({ message: `${error}` });
     } else {
       const user = await userService.findUserById(decoded.userId);
       if (!user) {
