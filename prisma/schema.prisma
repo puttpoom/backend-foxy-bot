@@ -10,42 +10,60 @@ generator client {
 model User {
   id             Int            @id @default(autoincrement())
   email          String         @unique
-  uuid           String?        @unique
   password       String
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
-  historyLogins  HistoryLogin[]
-  expPackages    ExpPackage[]
+  uuid           String?
+  point          Int            @default(0)
+  role           Role           @default(USER)
+  subscriptions  Subscription[]
   usageHistories UsageHistory[]
+  secretCodes    SecretCode?
 
   @@map("user")
 }
 
-model HistoryLogin {
-  id      Int      @id @default(autoincrement())
-  userId  Int
-  loginAt DateTime @default(now())
-  user    User     @relation(fields: [userId], references: [id])
+model SecretCode {
+  id          Int      @id @default(autoincrement())
+  code        String   @unique
+  isActivated Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  userId      Int?     @unique // The user who owns the secret code
+  user        User?    @relation(fields: [userId], references: [id])
 
-  @@map("history_login")
+  @@map("secret_code")
 }
 
-model ExpPackage {
-  id         Int      @id @default(autoincrement())
-  userId     Int
-  packageId  Int
-  expiration DateTime
-  user       User     @relation(fields: [userId], references: [id])
-  package    Package  @relation(fields: [packageId], references: [id])
+enum Role {
+  USER
+  TRIAL
+  ADMIN
+}
 
-  @@map("exp_package")
+model Subscription {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  packageId Int
+  startDate DateTime  @default(now())
+  endDate   DateTime?
+  isExpired Boolean   @default(false)
+  user      User      @relation(fields: [userId], references: [id])
+  package   Package   @relation(fields: [packageId], references: [id])
+
+  @@map("subscription")
 }
 
 model Package {
-  id          Int          @id @default(autoincrement())
-  name        String       @unique
-  description String?
-  expPackages ExpPackage[]
+  id            Int            @id @default(autoincrement())
+  name          String
+  description   String?
+  duration      Int // Duration in days (e.g., 3 for trial, 30 for 1 month)
+  isPermanent   Boolean // True if the package is permanent, false otherwise
+  price         Int            @default(0)
+  href          String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  subscriptions Subscription[]
 
   @@map("package")
 }
@@ -57,5 +75,5 @@ model UsageHistory {
   usedAt    DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
 
-  @@map("usage_history")
+  @@map("usageHistory")
 }
