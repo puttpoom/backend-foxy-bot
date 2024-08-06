@@ -15,3 +15,8 @@ exports.getUserPointByUserId = (id) =>
 
 exports.updateUserPointByUserId = (id, point) =>
   prisma.user.update({ where: { id }, data: { point } });
+
+exports.findUserByLineId = (lineId) =>
+  prisma.user.findFirst({ where: { lineId } });
+
+exports.createUserWithLineId = (data) => prisma.user.create({ data });
