@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE `user` ADD COLUMN `lineId` VARCHAR(191) NULL,
+    ADD COLUMN `name` VARCHAR(191) NULL,
+    ADD COLUMN `picture` VARCHAR(191) NULL;
