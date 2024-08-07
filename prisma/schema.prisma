@@ -57,7 +57,7 @@ model Subscription {
 }
 
 model Package {
-  id            Int            @id @default(autoincrement())
+  id            Int            @id @unique @default(autoincrement())
   name          String
   description   String?
   duration      Int // Duration in days (e.g., 3 for trial, 30 for 1 month)

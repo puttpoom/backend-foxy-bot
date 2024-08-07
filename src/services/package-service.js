@@ -10,3 +10,19 @@ exports.getAllPackages = () =>
       duration: true,
     },
   });
+
+exports.getPackageByUserIdAndPackageId = (userId, packageId) => {
+  return prisma.package.findFirst({
+    where: {
+      id: packageId,
+      subscriptions: {
+        some: {
+          userId: userId,
+        },
+      },
+    },
+    include: {
+      subscriptions: true,
+    },
+  });
+};
