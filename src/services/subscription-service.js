@@ -2,7 +2,7 @@ const prisma = require("../models/prisma");
 
 exports.getUserSubcriptionByUserId = (id) =>
   prisma.subscription.findMany({
-    where: { userId: id },
+    where: { userId: id, isExpired: false },
     include: { package: true },
   });
 
