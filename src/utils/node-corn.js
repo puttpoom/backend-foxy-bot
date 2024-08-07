@@ -1,7 +1,7 @@
 const cron = require("node-cron");
 const prisma = require("../models/prisma");
 
-cron.schedule("* * * * *", async () => {
+cron.schedule("0 0 * * *", async () => {
   console.log("Running cron job to check for expired subscriptions");
   const expiredSubscriptions = await prisma.subscription.findMany({
     where: {
@@ -15,6 +15,7 @@ cron.schedule("* * * * *", async () => {
     await prisma.subscription.update({
       where: {
         id: subscription.id,
+        isExpired: false,
       },
       data: {
         isExpired: true,
