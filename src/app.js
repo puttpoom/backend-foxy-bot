@@ -14,7 +14,7 @@ const allowedOrigin = "chrome-extension://bakgomgejopenjmjaipflkhjnnecdegm";
 
 const limiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 200, // limit each IP to request per windowMs
+  max: 60, // limit each IP to request per windowMs
   message: "Too many requests from this IP, please try again later.",
 });
 

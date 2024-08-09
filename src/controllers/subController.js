@@ -10,6 +10,19 @@ exports.getUserSubcription = catchError(async (req, res) => {
 });
 
 exports.userBuySubcription = catchError(async (req, res) => {
+  //find user package if exist return error
+  const userSubcriptions = await subcriptionService.getUserSubcriptionByUserId(
+    req.user.id
+  );
+
+  const isUserOwnPackageAlready = userSubcriptions.find(
+    (sub) => sub.package.id === req.body.packageId
+  );
+
+  if (isUserOwnPackageAlready) {
+    return res.status(400).json({ message: "User already own this package" });
+  }
+
   const { point } = await userService.getUserPointByUserId(req.user.id);
 
   const package = await subcriptionService.findPackageById(req.body.packageId);
@@ -34,12 +47,12 @@ exports.userBuySubcription = catchError(async (req, res) => {
   const endDate = new Date();
   endDate.setDate(endDate.getDate() + durationDays);
 
-  const userSubcription = await subcriptionService.createSubcriptionByUser(
+  const newUserSubcription = await subcriptionService.createSubcriptionByUser(
     req.user.id,
     req.body.packageId,
     (req.body.endDate = endDate)
   );
-  res.status(200).json(userSubcription);
+  res.status(200).json(newUserSubcription);
 });
 
 exports.getUserSubcription = catchError(async (req, res) => {
