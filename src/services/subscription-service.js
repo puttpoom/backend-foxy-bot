@@ -16,3 +16,6 @@ exports.createSubcriptionByUser = (userId, packageId, endDate) =>
       endDate,
     },
   });
+
+exports.updateExprieSubById = (id) =>
+  prisma.subscription.update({ where: { id }, data: { isExpired: true } });

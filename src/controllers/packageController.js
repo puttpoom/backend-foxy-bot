@@ -1,5 +1,6 @@
 const catchError = require("../utils/catch-error");
 const packageService = require("../services/package-service");
+const subscriptionService = require("../services/subscription-service");
 
 exports.getAllPackages = catchError(async (req, res) => {
   const packages = await packageService.getAllPackages();
@@ -21,6 +22,20 @@ exports.checkUserPackage = catchError(async (req, res) => {
     return res
       .status(404)
       .json({ message: "Package not found or User Don't have this package" });
+  }
+
+  const currentDate = new Date();
+  const isSubcriptionExpired = package.subscriptions.filter((sub) => {
+    new Date(sub.endDate) < currentDate;
+  });
+
+  console.log("isSubcriptionExpired", isSubcriptionExpired);
+
+  if (isSubcriptionExpired && isSubcriptionExpired.length > 0) {
+    for (const sub of isSubcriptionExpired) {
+      await subscriptionService.updateExprieSubById(sub.id);
+    }
+    return res.status(400).json({ message: "Package is expired" });
   }
 
   return res.status(200).json(package);
