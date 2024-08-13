@@ -27,14 +27,16 @@ exports.checkUserPackage = catchError(async (req, res) => {
   const currentDate = new Date();
 
   const isSubcriptionExpired = package.subscriptions.filter((sub) => {
-    return new Date(sub.endDate) < currentDate;
+    return sub.isExpired === false && new Date(sub.endDate) < currentDate;
   });
+
+  console.log(isSubcriptionExpired, "isSubcriptionExpired");
 
   if (isSubcriptionExpired && isSubcriptionExpired.length > 0) {
     for (const sub of isSubcriptionExpired) {
       await subscriptionService.updateExprieSubById(sub.id);
     }
-    return res.status(400).json({ message: "Package is expired" });
+    return res.status(400).json({ message: "Subcription is expired" });
   }
 
   delete package?.href;
