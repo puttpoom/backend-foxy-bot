@@ -37,5 +37,15 @@ exports.checkUserPackage = catchError(async (req, res) => {
     return res.status(400).json({ message: "Package is expired" });
   }
 
-  return res.status(200).json({ message: "You have This Package" });
+  delete package?.href;
+  delete package?.createdAt;
+  delete package?.updatedAt;
+  delete package?.isPermanent;
+  delete package?.description;
+  delete package?.price;
+  delete package?.name;
+  delete package?.duration;
+  delete package?.subscriptions;
+
+  return res.status(200).json(package);
 });
