@@ -11,18 +11,20 @@ cron.schedule("0 0 * * *", async () => {
     },
   });
 
-  expiredSubscriptions.forEach(async (subscription) => {
-    await prisma.subscription.update({
-      where: {
-        id: subscription.id,
-        isExpired: false,
-      },
-      data: {
-        isExpired: true,
-      },
+  if (expiredSubscriptions.length > 0 && expiredSubscriptions) {
+    expiredSubscriptions.forEach(async (subscription) => {
+      await prisma.subscription.update({
+        where: {
+          id: subscription.id,
+          isExpired: false,
+        },
+        data: {
+          isExpired: true,
+        },
+      });
+      console.log(
+        `Subscription ${subscription.id} for userId ${subscription.userId} has expired`
+      );
     });
-    console.log(
-      `Subscription ${subscription.id} for userId ${subscription.userId} has expired`
-    );
-  });
+  }
 });
